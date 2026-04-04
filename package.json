@@ -1,0 +1,12 @@
+{
+  "name": "vantaigo",
+  "version": "1.0.0",
+  "description": "Vantaigo Software Solutions - Full Stack MERN App",
+  "scripts": {
+    "server": "cd server && node server.js",
+    "client": "cd client && npm run dev",
+    "dev": "start cmd /c \"cd server && node --watch server.js\" && cd client && npm run dev",
+    "seed": "cd server && node seeds/seed.js",
+    "build": "cd client && npm run build"
+  }
+}
