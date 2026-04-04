@@ -3,6 +3,7 @@ import { adminAPI } from '../api';
 
 const AuthContext = createContext(null);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) throw new Error('useAuth must be used within AuthProvider');
@@ -11,7 +12,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [admin, setAdmin] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!!localStorage.getItem('vantaigo_token'));
 
   useEffect(() => {
     const token = localStorage.getItem('vantaigo_token');
@@ -20,8 +21,6 @@ export const AuthProvider = ({ children }) => {
         .then(res => setAdmin(res.data.admin))
         .catch(() => localStorage.removeItem('vantaigo_token'))
         .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
     }
   }, []);
 

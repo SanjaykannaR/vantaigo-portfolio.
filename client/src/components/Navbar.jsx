@@ -15,6 +15,7 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line
     setIsOpen(false);
   }, [location]);
 
