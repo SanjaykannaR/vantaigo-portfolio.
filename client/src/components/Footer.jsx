@@ -86,9 +86,9 @@ const Footer = () => {
             </form>
             {subscribeMsg && <p className="footer-subscribe-msg">{subscribeMsg}</p>}
             <div className="footer-contact-info">
-              <div><FiMail /> <span>info@vantaigo.com</span></div>
-              <div><FiPhone /> <span>+91 9876543210</span></div>
-              <div><FiMapPin /> <span>Hyderabad, India</span></div>
+              <div><FiMail /> <span>vantaigosoftware@outlook.com</span></div>
+              <div><FiPhone /> <span>+91 9629897489</span></div>
+              <div><FiMapPin /> <span>India</span></div>
             </div>
           </div>
         </div>

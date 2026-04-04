@@ -72,17 +72,17 @@ const Contact = () => {
               <div className="contact-info-card glass-card">
                 <FiMail className="contact-info-icon" />
                 <h4>Email Us</h4>
-                <p>info@vantaigo.com</p>
+                <p>vantaigosoftware@outlook.com</p>
               </div>
               <div className="contact-info-card glass-card">
                 <FiPhone className="contact-info-icon" />
                 <h4>Call Us</h4>
-                <p>+91 9876543210</p>
+                <p>+91 9629897489</p>
               </div>
               <div className="contact-info-card glass-card">
                 <FiMapPin className="contact-info-icon" />
                 <h4>Visit Us</h4>
-                <p>Hyderabad, Telangana, India</p>
+                <p>India</p>
               </div>
             </motion.div>
           </div>
