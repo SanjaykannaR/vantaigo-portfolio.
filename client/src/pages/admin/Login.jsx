@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { FiLock, FiUser } from 'react-icons/fi';
 import './Admin.css';
@@ -41,6 +41,9 @@ const Login = () => {
             <input className="form-control" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••" required />
           </div>
           {error && <div className="login-error">{error}</div>}
+          <div style={{ textAlign: 'right', marginBottom: '1rem', marginTop: '-0.5rem' }}>
+            <Link to="/admin/forgot-password" style={{ fontSize: '0.85rem', color: 'var(--primary)', textDecoration: 'none' }}>Forgot Password?</Link>
+          </div>
           <button type="submit" className="btn btn-primary btn-lg" style={{ width: '100%' }} disabled={loading}>
             {loading ? 'Signing in...' : 'Sign In'}
           </button>

@@ -17,6 +17,9 @@ const careerRoutes = require('./routes/careers');
 const newsletterRoutes = require('./routes/newsletter');
 const siteconfigRoutes = require('./routes/siteconfig');
 const uploadRoutes = require('./routes/upload');
+const resumeRoutes = require('./routes/resumes');
+const hrmsRoutes = require('./routes/hrms');
+const crmRoutes = require('./routes/crm');
 
 const app = express();
 
@@ -28,8 +31,11 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Serve uploaded files
+// Serve uploaded images (public)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// NOTE: CRM files are in uploads/crm/ but are NOT accessible via this static route
+// — they are served only through the auth-gated /api/crm/:id/files/:fileId/download endpoint
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -43,6 +49,9 @@ app.use('/api/careers', careerRoutes);
 app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/siteconfig', siteconfigRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/resumes', resumeRoutes);
+app.use('/api/hrms', hrmsRoutes);
+app.use('/api/crm', crmRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -54,4 +63,6 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📡 API available at http://localhost:${PORT}/api`);
+  console.log(`📁 Resume uploads: /uploads/resumes/ (max 5MB)`);
+  console.log(`🔒 CRM files: /uploads/crm/ (auth-gated access only)`);
 });

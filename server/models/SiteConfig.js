@@ -38,6 +38,8 @@ const siteConfigSchema = new mongoose.Schema({
     twitter: { type: String, default: '' },
     facebook: { type: String, default: '' },
     instagram: { type: String, default: '' },
+    youtube: { type: String, default: '' },
+    github: { type: String, default: '' },
   },
   stats: {
     clientsCount: { type: Number, default: 50 },

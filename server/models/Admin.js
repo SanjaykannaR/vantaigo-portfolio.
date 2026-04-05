@@ -21,6 +21,8 @@ const adminSchema = new mongoose.Schema({
     required: [true, 'Password is required'],
     minlength: 6,
   },
+  resetPasswordToken: String,
+  resetPasswordExpire: Date,
 }, { timestamps: true });
 
 // Hash password before saving
