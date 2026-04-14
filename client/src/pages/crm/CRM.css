@@ -140,6 +140,7 @@
 }
 
 @media (max-width: 768px) {
+  .crm-page { flex-direction: column; }
   .crm-mobile-header { display: flex; }
   .crm-sidebar {
     position: fixed;
@@ -148,6 +149,8 @@
     height: 100%;
     z-index: 150;
     transition: left 0.25s ease;
+    background: #0D1117;
+    border-right: 1px solid rgba(163,113,247,0.1);
   }
   .crm-sidebar.open { left: 0; }
   .crm-content { padding: 1rem; }

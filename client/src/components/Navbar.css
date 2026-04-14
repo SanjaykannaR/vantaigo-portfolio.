@@ -99,8 +99,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(10, 14, 23, 0.98);
-    backdrop-filter: blur(20px);
+    background-color: #060A12 !important; /* Force fully opaque dark background */
+    overflow-y: auto; /* Allow menu link list to scroll */
     flex-direction: column;
     padding: 32px 24px;
     gap: 8px;

@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useHRMSAuth } from '../../context/HRMSAuthContext';
+import { hrmsEmployeeAPI } from '../../api';
 import {
-  FiHome, FiCalendar, FiList, FiFileText, FiLogOut, FiMenu, FiX, FiUser
+  FiHome, FiCalendar, FiList, FiFileText, FiLogOut, FiMenu, FiX, FiUser, FiKey
 } from 'react-icons/fi';
 import './HRMS.css';
 
@@ -11,10 +12,33 @@ const HRMSLayout = ({ title, children }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showPwdModal, setShowPwdModal] = useState(false);
+  const [pwdForm, setPwdForm] = useState({ currentPassword: '', newPassword: '' });
+  const [pwdStatus, setPwdStatus] = useState({ loading: false, error: '', success: '' });
 
   const handleLogout = () => {
     logout();
     navigate('/hrms/login');
+  };
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    if (pwdForm.newPassword.length < 6) {
+      setPwdStatus({ loading: false, error: 'New password must be at least 6 characters', success: '' });
+      return;
+    }
+    setPwdStatus({ loading: true, error: '', success: '' });
+    try {
+      await hrmsEmployeeAPI.changePassword(pwdForm);
+      setPwdStatus({ loading: false, error: '', success: 'Password updated successfully!' });
+      setTimeout(() => {
+        setShowPwdModal(false);
+        setPwdForm({ currentPassword: '', newPassword: '' });
+        setPwdStatus({ loading: false, error: '', success: '' });
+      }, 2000);
+    } catch (err) {
+      setPwdStatus({ loading: false, error: err.response?.data?.message || 'Error changing password', success: '' });
+    }
   };
 
   const links = [
@@ -74,6 +98,9 @@ const HRMSLayout = ({ title, children }) => {
         </nav>
 
         <div className="hrms-sidebar-footer">
+          <button className="hrms-nav-link" onClick={() => { setMenuOpen(false); setShowPwdModal(true); }}>
+            <FiKey /> Change Password
+          </button>
           <button className="hrms-nav-link" onClick={handleLogout}>
             <FiLogOut /> Logout
           </button>
@@ -94,6 +121,51 @@ const HRMSLayout = ({ title, children }) => {
         </div>
         <div className="hrms-content">{children}</div>
       </main>
+
+      {/* Change Password Modal */}
+      {showPwdModal && (
+        <div className="hrms-modal-overlay" onClick={() => setShowPwdModal(false)}>
+          <div className="hrms-modal" style={{ maxWidth: '400px' }} onClick={e => e.stopPropagation()}>
+            <div className="hrms-modal-header">
+              <h3><FiKey /> Change Password</h3>
+              <button className="hrms-icon-btn" onClick={() => setShowPwdModal(false)}><FiX /></button>
+            </div>
+            {pwdStatus.error && <div className="hrms-alert hrms-alert-error">{pwdStatus.error}</div>}
+            {pwdStatus.success && <div className="hrms-alert hrms-alert-success">{pwdStatus.success}</div>}
+            
+            <form onSubmit={handlePasswordChange}>
+              <div className="hrms-form-group" style={{ marginBottom: '1rem' }}>
+                <label>Current Password</label>
+                <input 
+                  className="hrms-input" 
+                  type="password" 
+                  required 
+                  value={pwdForm.currentPassword} 
+                  onChange={e => setPwdForm({...pwdForm, currentPassword: e.target.value})}
+                  placeholder="Enter current password" 
+                />
+              </div>
+              <div className="hrms-form-group" style={{ marginBottom: '1.5rem' }}>
+                <label>New Password</label>
+                <input 
+                  className="hrms-input" 
+                  type="password" 
+                  required 
+                  value={pwdForm.newPassword} 
+                  onChange={e => setPwdForm({...pwdForm, newPassword: e.target.value})}
+                  placeholder="At least 6 characters" 
+                />
+              </div>
+              <div className="hrms-modal-actions">
+                <button type="button" className="hrms-btn hrms-btn-outline" onClick={() => setShowPwdModal(false)}>Cancel</button>
+                <button type="submit" className="hrms-btn hrms-btn-primary" disabled={pwdStatus.loading}>
+                  {pwdStatus.loading ? 'Updating...' : 'Update Password'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

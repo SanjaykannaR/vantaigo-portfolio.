@@ -19,6 +19,18 @@ const Navbar = () => {
     setIsOpen(false);
   }, [location]);
 
+  // Prevent background scrolling when mobile menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   const navLinks = [
     { path: '/', label: 'Home' },
     { path: '/about', label: 'About' },

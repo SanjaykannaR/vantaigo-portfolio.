@@ -34,7 +34,7 @@ const CRMReports = () => {
         <div className="crm-section-header">
           <h3>Financial Overview</h3>
         </div>
-        <div className="crm-stats-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
+        <div className="crm-cards-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
           
           <div className="crm-card glass-card" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
             <div className="crm-stat-icon" style={{ background: 'rgba(43,165,165,0.15)', color: '#2BA5A5', fontSize: '1.8rem', width: '60px', height: '60px' }}>

@@ -256,6 +256,7 @@
 }
 
 @media (max-width: 768px) {
+  .hrms-page { flex-direction: column; }
   .hrms-mobile-header { display: flex; }
   .hrms-sidebar {
     position: fixed;
@@ -264,6 +265,8 @@
     height: 100%;
     z-index: 150;
     transition: left 0.25s ease;
+    background: #0D1117;
+    border-right: 1px solid rgba(255,255,255,0.1);
   }
   .hrms-sidebar.open { left: 0; }
   .hrms-content { padding: 1rem; }

@@ -19,12 +19,13 @@ const ManageEmployees = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [successPassword, setSuccessPassword] = useState(null);
 
   const load = async () => {
     try {
       const r = await adminAPI.getEmployees();
       setItems(r.data);
-    } catch { }
+    } catch (e) { console.error(e); }
   };
 
   useEffect(() => { load(); }, []);
@@ -77,22 +78,31 @@ const ManageEmployees = () => {
       await adminAPI.deleteEmployee(deleteId);
       setDeleteId(null);
       load();
-    } catch { }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const handleResetPassword = async () => {
-    if (!newPassword || newPassword.length < 6) {
-      setError('Password must be at least 6 characters');
+    if (newPassword && newPassword.length < 6) {
+      setError('Password must be at least 6 characters if provided manually');
       return;
     }
     try {
-      await adminAPI.resetEmployeePassword(resetId, { newPassword });
-      setResetId(null);
+      setLoading(true);
+      const payload = newPassword ? { newPassword } : {};
+      const res = await adminAPI.resetEmployeePassword(resetId, payload);
+      const finalPass = res.data.newPassword || newPassword;
+      setSuccessPassword(finalPass);
+      // Wait to close the modal until they copy it
       setNewPassword('');
+      load();
       setSuccess('Password reset successfully!');
-      setTimeout(() => setSuccess(''), 3000);
+      setTimeout(() => setSuccess(''), 4000);
     } catch (err) {
       setError(err.response?.data?.message || 'Error resetting password');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -100,7 +110,9 @@ const ManageEmployees = () => {
     try {
       await adminAPI.updateEmployee(item._id, { ...item, isActive: !item.isActive });
       load();
-    } catch { }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
@@ -136,7 +148,12 @@ const ManageEmployees = () => {
               <tr key={item._id}>
                 <td><code style={{ background: 'var(--bg-glass)', padding: '2px 6px', borderRadius: '4px', fontWeight: 700, color: 'var(--primary)' }}>{item.employeeId}</code></td>
                 <td>
-                  <div style={{ fontWeight: 600 }}>{item.name}</div>
+                  <div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    {item.name}
+                    {item.passwordResetRequested && (
+                      <span className="badge" style={{ background: 'rgba(248,81,73,0.15)', color: '#F85149', fontSize: '0.65rem', padding: '2px 6px' }}>Reset Req!</span>
+                    )}
+                  </div>
                   <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{item.email}</div>
                 </td>
                 <td>{item.department || '—'}</td>
@@ -222,21 +239,52 @@ const ManageEmployees = () => {
 
       {/* Reset Password Modal */}
       {resetId && (
-        <div className="modal-overlay" onClick={() => setResetId(null)}>
+        <div className="modal-overlay" onClick={() => { if (!successPassword) setResetId(null); }}>
           <div className="modal-content" style={{ maxWidth: '400px' }} onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <h3><FiKey /> Reset Password</h3>
-              <button className="modal-close" onClick={() => setResetId(null)}><FiX /></button>
+              {!successPassword && <button className="modal-close" onClick={() => setResetId(null)}><FiX /></button>}
             </div>
-            {error && <div className="alert alert-error">{error}</div>}
-            <div className="form-group">
-              <label>New Password</label>
-              <input className="form-control" type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="Enter new password (min 6 chars)" />
-            </div>
-            <div className="modal-actions">
-              <button className="btn btn-outline" onClick={() => setResetId(null)}>Cancel</button>
-              <button className="btn btn-primary" onClick={handleResetPassword}><FiKey /> Reset Password</button>
-            </div>
+            
+            {successPassword ? (
+              <div style={{ textAlign: 'center', padding: '10px 0' }}>
+                <p style={{ marginBottom: '16px', color: 'var(--primary)' }}>Password has been reset successfully!</p>
+                <label style={{ display: 'block', textAlign: 'left', marginBottom: '8px', fontSize: '0.88rem', color: 'var(--text-muted)' }}>Temporary Password</label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input 
+                    className="form-control" 
+                    readOnly 
+                    value={successPassword} 
+                    style={{ flex: 1, textAlign: 'center', fontWeight: 'bold', letterSpacing: '2px', background: 'rgba(43,165,165,0.05)' }} 
+                  />
+                  <button 
+                    className="btn btn-primary" 
+                    onClick={() => {
+                      navigator.clipboard.writeText(successPassword);
+                      setSuccessPassword(null);
+                      setResetId(null);
+                    }}
+                  >
+                    Copy & Close
+                  </button>
+                </div>
+                <p style={{ marginTop: '16px', fontSize: '0.78rem', color: 'var(--text-muted)' }}>Share this password securely with the employee.</p>
+              </div>
+            ) : (
+              <>
+                {error && <div className="alert alert-error">{error}</div>}
+                <div className="form-group">
+                  <label>New Password (Leave blank to auto-generate)</label>
+                  <input className="form-control" type="text" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="Auto-generates 8 chars..." />
+                </div>
+                <div className="modal-actions">
+                  <button className="btn btn-outline" onClick={() => setResetId(null)}>Cancel</button>
+                  <button className="btn btn-primary" onClick={handleResetPassword} disabled={loading}>
+                    {loading ? 'Processing...' : <><FiKey /> Reset Password</>}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

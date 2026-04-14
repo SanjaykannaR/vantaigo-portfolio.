@@ -59,6 +59,7 @@ export const publicAPI = {
   getTestimonials: () => api.get('/testimonials'),
   getBlogPosts: (params) => api.get('/blog', { params }),
   getBlogPost: (slug) => api.get(`/blog/${slug}`),
+  requestEmployeePasswordReset: (data) => api.post('/hrms/employee-forgot-password', data),
   getTeam: () => api.get('/team'),
   getCareers: (params) => api.get('/careers', { params }),
   getCareer: (id) => api.get(`/careers/${id}`),
@@ -179,6 +180,7 @@ export const adminAPI = {
 export const hrmsEmployeeAPI = {
   login: (data) => hrmsApi.post('/hrms/employee-login', data),
   verify: () => hrmsApi.post('/hrms/employee-verify'),
+  changePassword: (data) => hrmsApi.post('/hrms/employee-change-password', data),
 
   getMyAttendance: (params) => hrmsApi.get('/hrms/attendance/my', { params }),
   markAttendance: (data) => hrmsApi.post('/hrms/attendance', data),

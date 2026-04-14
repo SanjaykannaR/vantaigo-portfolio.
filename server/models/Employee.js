@@ -52,6 +52,10 @@ const employeeSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  passwordResetRequested: {
+    type: Boolean,
+    default: false,
+  },
 }, { timestamps: true });
 
 // Hash password before saving

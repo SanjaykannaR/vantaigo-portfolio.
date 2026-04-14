@@ -106,8 +106,9 @@ const Home = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            {config?.heroTitle || 'Empowering Businesses with'}{' '}
-            <span className="text-gradient">HR & Software Solutions</span>
+            <span className="text-gradient">
+              {config?.heroTitle || 'Empowering Businesses with HR & Software Solutions'}
+            </span>
           </motion.h1>
           <motion.p
             className="hero-subtitle"

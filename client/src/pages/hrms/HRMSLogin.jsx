@@ -4,11 +4,14 @@ import { useHRMSAuth } from '../../context/HRMSAuthContext';
 import { FiUser, FiLock, FiLogIn } from 'react-icons/fi';
 import './HRMS.css';
 
+import { publicAPI } from '../../api';
+
 const HRMSLogin = () => {
   const { login } = useHRMSAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ employeeId: '', password: '' });
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -20,6 +23,24 @@ const HRMSLogin = () => {
       navigate('/hrms/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid credentials. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!form.employeeId) {
+      setError('Please enter your Employee ID first to request a password reset.');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    setSuccess('');
+    try {
+      const res = await publicAPI.requestEmployeePasswordReset({ employeeId: form.employeeId });
+      setSuccess(res.data.message);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to request password reset.');
     } finally {
       setLoading(false);
     }
@@ -41,6 +62,7 @@ const HRMSLogin = () => {
         <p className="hrms-login-sub">Enter your Employee ID and password to access your dashboard</p>
 
         {error && <div className="hrms-alert hrms-alert-error">{error}</div>}
+        {success && <div className="hrms-alert hrms-alert-success">{success}</div>}
 
         <form onSubmit={handleSubmit} className="hrms-login-form">
           <div className="hrms-form-group">
@@ -70,6 +92,17 @@ const HRMSLogin = () => {
                 placeholder="Your password"
                 required
               />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '-4px' }}>
+              <button 
+                type="button" 
+                onClick={handleForgotPassword}
+                className="hrms-link-btn" 
+                style={{ fontSize: '0.8rem' }}
+                disabled={loading}
+              >
+                Forgot Password?
+              </button>
             </div>
           </div>
           <button type="submit" className="hrms-login-btn" disabled={loading}>

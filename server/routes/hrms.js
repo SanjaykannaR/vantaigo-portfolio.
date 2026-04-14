@@ -5,9 +5,11 @@ const hrmsAuth = require('../middleware/hrmsAuth');   // employee auth
 
 // ── Employee login (public) ──────────────────────────────────────────────────
 router.post('/employee-login', ctrl.employeeLogin);
+router.post('/employee-forgot-password', ctrl.requestPasswordReset);
 
 // ── Verify employee token ────────────────────────────────────────────────────
 router.post('/employee-verify', hrmsAuth, ctrl.verifyEmployee);
+router.post('/employee-change-password', hrmsAuth, ctrl.changeOwnPassword);
 
 // ── Employee CRUD (admin only) ───────────────────────────────────────────────
 router.get('/employees', auth, ctrl.getAllEmployees);

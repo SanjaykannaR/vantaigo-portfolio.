@@ -40,6 +40,47 @@ exports.employeeLogin = async (req, res) => {
   }
 };
 
+// ─── Employee Password Management ────────────────────────────────────────────
+exports.requestPasswordReset = async (req, res) => {
+  try {
+    const { employeeId } = req.body;
+    if (!employeeId) return res.status(400).json({ message: 'Employee ID is required' });
+
+    await Employee.findOneAndUpdate(
+      { employeeId: employeeId.toUpperCase() },
+      { passwordResetRequested: true }
+    );
+    
+    // Generic response prevents username enumeration
+    res.json({ message: 'If the ID exists, a password reset request has been sent to the Admin.' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+exports.changeOwnPassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) 
+      return res.status(400).json({ message: 'Current and new passwords are required' });
+      
+    if (newPassword.length < 6)
+      return res.status(400).json({ message: 'New password must be at least 6 characters' });
+
+    const employee = await Employee.findById(req.employeeMongoId);
+    
+    const isMatch = await employee.comparePassword(currentPassword);
+    if (!isMatch) return res.status(400).json({ message: 'Incorrect current password' });
+    
+    employee.password = newPassword;
+    await employee.save();
+    
+    res.json({ message: 'Password changed successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 // ─── Employee CRUD (admin only) ──────────────────────────────────────────────
 exports.getAllEmployees = async (req, res) => {
   try {
@@ -79,15 +120,23 @@ exports.updateEmployee = async (req, res) => {
 exports.resetEmployeePassword = async (req, res) => {
   try {
     const { newPassword } = req.body;
-    if (!newPassword || newPassword.length < 6)
+    let finalPassword = newPassword;
+    
+    // Auto-generate an 8-character random password if none provided
+    if (!finalPassword) {
+      finalPassword = Math.random().toString(36).slice(-8);
+    }
+    
+    if (finalPassword.length < 6)
       return res.status(400).json({ message: 'Password must be at least 6 characters' });
 
     const employee = await Employee.findById(req.params.id);
     if (!employee) return res.status(404).json({ message: 'Employee not found' });
 
-    employee.password = newPassword;
+    employee.password = finalPassword;
+    employee.passwordResetRequested = false; // Clear the flag
     await employee.save(); // triggers pre-save hash
-    res.json({ message: 'Password reset successfully' });
+    res.json({ message: 'Password reset successfully', newPassword: finalPassword });
   } catch (error) {
     res.status(400).json({ message: 'Error resetting password', error: error.message });
   }
