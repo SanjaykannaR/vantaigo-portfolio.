@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView } from 'framer-motion'; // eslint-disable-line no-unused-vars
 import { FiArrowRight, FiUsers, FiCode, FiAward, FiTrendingUp, FiStar, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { publicAPI } from '../api';
 import './Home.css';

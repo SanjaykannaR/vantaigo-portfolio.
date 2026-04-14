@@ -83,8 +83,9 @@ exports.verify = async (req, res) => {
 exports.forgotPassword = async (req, res) => {
   try {
     const admin = await Admin.findOne({ email: req.body.email });
+    // Always return success to prevent email enumeration attacks
     if (!admin) {
-      return res.status(404).json({ message: 'No admin found with that email address.' });
+      return res.status(200).json({ message: 'If an account with that email exists, a reset link has been sent.' });
     }
 
     // Generate Token

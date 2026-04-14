@@ -52,7 +52,6 @@ const ForgotPassword = () => {
 
             <form onSubmit={handleSubmit} id="admin-login-form">
               <div className="form-group">
-                <label>Admin Email Address</label>
                 <label><FiMail /> Admin Email</label>
                 <input
                   type="email"

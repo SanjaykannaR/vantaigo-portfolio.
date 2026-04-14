@@ -19,6 +19,8 @@ import Contact from './pages/Contact';
 
 // Admin Pages
 import Login from './pages/admin/Login';
+import ForgotPassword from './pages/admin/ForgotPassword';
+import ResetPassword from './pages/admin/ResetPassword';
 import Dashboard from './pages/admin/Dashboard';
 import ManageClients from './pages/admin/ManageClients';
 import ManageProjects from './pages/admin/ManageProjects';
@@ -89,6 +91,8 @@ function App() {
 
             {/* ── Admin Routes ── */}
             <Route path="/admin/login" element={<Login />} />
+            <Route path="/admin/forgot-password" element={<ForgotPassword />} />
+            <Route path="/admin/reset-password/:token" element={<ResetPassword />} />
             <Route path="/admin" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/admin/clients" element={<ProtectedRoute><ManageClients /></ProtectedRoute>} />
             <Route path="/admin/projects" element={<ProtectedRoute><ManageProjects /></ProtectedRoute>} />
