@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { hrmsEmployeeAPI } from '../../api';
 import HRMSLayout from './HRMSLayout';
 import {
-  FiLogIn, FiLogOut, FiCalendar, FiClock, FiChevronLeft, FiChevronRight, FiCheckCircle
+  FiLogIn, FiLogOut, FiCalendar, FiClock, FiChevronLeft, FiChevronRight, FiCheckCircle, FiCoffee
 } from 'react-icons/fi';
 
 const STATUS_COLORS = {
@@ -112,10 +112,45 @@ const HRMSAttendance = () => {
     }
   };
 
+  const handleBreakAction = async () => {
+    setActionLoading('break');
+    try {
+      const now = new Date().toISOString();
+      const currentBreaks = todayRecord?.breaks || [];
+      const updatedBreaks = [...currentBreaks];
+      
+      const onBreak = currentBreaks.length > 0 && currentBreaks[currentBreaks.length - 1].start && !currentBreaks[currentBreaks.length - 1].end;
+
+      if (onBreak) {
+        updatedBreaks[updatedBreaks.length - 1].end = now;
+      } else {
+        updatedBreaks.push({ start: now });
+      }
+
+      await hrmsEmployeeAPI.markAttendance({
+        date: todayStr,
+        status: todayRecord?.status || 'present',
+        checkIn: todayRecord?.checkIn,
+        checkOut: todayRecord?.checkOut || null,
+        notes: todayRecord?.notes || '',
+        breaks: updatedBreaks,
+      });
+      showMsg('success', onBreak ? 'Break ended. Welcome back!' : 'Break started. Enjoy your break!');
+      load();
+    } catch (err) {
+      showMsg('error', err.response?.data?.message || 'Failed to update break status.');
+    } finally {
+      setActionLoading('');
+    }
+  };
+
   // Derived state
   const hasCheckedIn = !!todayRecord?.checkIn;
   const hasCheckedOut = !!todayRecord?.checkOut;
   const isSessionComplete = hasCheckedIn && hasCheckedOut;
+  const breakList = todayRecord?.breaks || [];
+  const isOnBreak = breakList.length > 0 && breakList[breakList.length - 1].start && !breakList[breakList.length - 1].end;
+
 
   const monthName = new Date(year, month - 1).toLocaleString('default', { month: 'long', year: 'numeric' });
   const presentCount = records.filter(r => r.status === 'present').length;
@@ -174,6 +209,16 @@ const HRMSAttendance = () => {
               </div>
             </div>
             <div className="att-status-divider" />
+            <div className={`att-status-pill ${isOnBreak ? 'break-pill' : hasCheckedOut || breakList.length > 0 ? 'break-pill' : ''}`} style={(!isOnBreak && breakList.length === 0) ? { opacity: 0.5 } : {}}>
+              <FiCoffee />
+              <div>
+                <span className="att-pill-label">Break</span>
+                <span className="att-pill-time">
+                  {isOnBreak ? 'On Break' : breakList.length > 0 ? `${breakList.length} Break(s)` : '—'}
+                </span>
+              </div>
+            </div>
+            <div className="att-status-divider" />
             <div className={`att-status-pill ${hasCheckedOut ? 'active checked-out' : ''}`}>
               <FiLogOut />
               <div>
@@ -214,9 +259,25 @@ const HRMSAttendance = () => {
             </button>
 
             <button
+              className={`att-action-btn break-btn ${isOnBreak ? 'active' : ''}`}
+              onClick={handleBreakAction}
+              disabled={!!actionLoading || !hasCheckedIn || hasCheckedOut}
+              id="btn-break"
+            >
+              <FiCoffee size={20} />
+              <span>
+                {actionLoading === 'break'
+                  ? 'Processing...'
+                  : isOnBreak
+                    ? 'Resume Work'
+                    : 'Take Break'}
+              </span>
+            </button>
+
+            <button
               className={`att-action-btn clock-out-btn ${hasCheckedOut ? 'done' : ''}`}
               onClick={handleClockOut}
-              disabled={!!actionLoading || !hasCheckedIn || hasCheckedOut}
+              disabled={!!actionLoading || !hasCheckedIn || hasCheckedOut || isOnBreak}
               id="btn-clock-out"
             >
               <FiLogOut size={20} />

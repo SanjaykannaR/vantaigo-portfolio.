@@ -169,18 +169,36 @@ exports.verifyEmployee = async (req, res) => {
 // ─── Attendance ──────────────────────────────────────────────────────────────
 exports.markAttendance = async (req, res) => {
   try {
-    const { date, status, checkIn, checkOut, notes } = req.body;
+    const { date, status, checkIn, checkOut, notes, breaks } = req.body;
     const employeeMongoId = req.employeeMongoId || req.body.employeeId;
+
+    let totalBreakMillis = 0;
+    if (breaks && Array.isArray(breaks)) {
+      breaks.forEach(b => {
+        if (b.start && b.end) {
+          totalBreakMillis += new Date(b.end) - new Date(b.start);
+        }
+      });
+    }
 
     // Compute work hours if both times provided
     let workHours = 0;
     if (checkIn && checkOut) {
-      workHours = parseFloat(((new Date(checkOut) - new Date(checkIn)) / 3600000).toFixed(2));
+      let grossMillis = new Date(checkOut) - new Date(checkIn);
+      grossMillis -= totalBreakMillis;
+      if (grossMillis < 0) grossMillis = 0;
+      workHours = parseFloat((grossMillis / 3600000).toFixed(2));
+    }
+
+    // Auto-mark absent if clocked out and worked less than 9 hours
+    let finalStatus = status;
+    if (checkOut && workHours < 9) {
+      finalStatus = 'absent';
     }
 
     const record = await Attendance.findOneAndUpdate(
       { employee: employeeMongoId, date },
-      { employee: employeeMongoId, date, status, checkIn, checkOut, notes, workHours },
+      { employee: employeeMongoId, date, status: finalStatus, checkIn, checkOut, notes, workHours, breaks },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     );
     res.json(record);
@@ -192,14 +210,34 @@ exports.markAttendance = async (req, res) => {
 // Admin marks/edits attendance for any employee
 exports.adminMarkAttendance = async (req, res) => {
   try {
-    const { employeeMongoId, date, status, checkIn, checkOut, notes } = req.body;
+    const { employeeMongoId, date, status, checkIn, checkOut, notes, breaks } = req.body;
+    
+    let totalBreakMillis = 0;
+    if (breaks && Array.isArray(breaks)) {
+      breaks.forEach(b => {
+        if (b.start && b.end) {
+          totalBreakMillis += new Date(b.end) - new Date(b.start);
+        }
+      });
+    }
+
     let workHours = 0;
     if (checkIn && checkOut) {
-      workHours = parseFloat(((new Date(checkOut) - new Date(checkIn)) / 3600000).toFixed(2));
+      let grossMillis = new Date(checkOut) - new Date(checkIn);
+      grossMillis -= totalBreakMillis;
+      if (grossMillis < 0) grossMillis = 0;
+      workHours = parseFloat((grossMillis / 3600000).toFixed(2));
     }
+
+    // Auto-mark absent if clocked out and worked less than 9 hours
+    let finalStatus = status;
+    if (checkOut && workHours < 9 && status !== 'leave' && status !== 'holiday' && status !== 'half-day') {
+      finalStatus = 'absent';
+    }
+
     const record = await Attendance.findOneAndUpdate(
       { employee: employeeMongoId, date },
-      { employee: employeeMongoId, date, status, checkIn, checkOut, notes, workHours },
+      { employee: employeeMongoId, date, status: finalStatus, checkIn, checkOut, notes, workHours, breaks },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     );
     res.json(record);

@@ -815,6 +815,11 @@
 .att-status-pill.active svg { color: #3FB950; }
 .att-status-pill.checked-out svg { color: #F85149; }
 .att-status-pill.hours-pill svg { color: #2BA5A5; }
+.att-status-pill.break-pill {
+  background: rgba(245,166,35,0.1);
+  border-color: rgba(245,166,35,0.3);
+}
+.att-status-pill.break-pill svg { color: #F5A623; }
 
 .att-pill-label {
   display: block;
@@ -836,7 +841,7 @@
 /* Action buttons */
 .att-action-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 12px;
 }
 
@@ -898,12 +903,25 @@
   box-shadow: 0 6px 20px rgba(248,81,73,0.4);
 }
 
-.clock-out-btn.done {
-  background: rgba(248,81,73,0.15);
+.att-action-btn.clock-out-btn.done {
+  background: rgba(248,81,73,0.1);
   color: #F85149;
-  box-shadow: none;
+  border-color: rgba(248,81,73,0.25);
   cursor: default;
-  border: 1px solid rgba(248,81,73,0.25);
+}
+
+.att-action-btn.break-btn {
+  background: rgba(245,166,35,0.15);
+  color: #F5A623;
+  border: 1px solid rgba(245,166,35,0.3);
+}
+.att-action-btn.break-btn:hover:not(:disabled) {
+  background: rgba(245,166,35,0.25);
+}
+.att-action-btn.break-btn.active {
+  background: linear-gradient(135deg, #F5A623, #F58323);
+  color: #fff;
+  border-color: transparent;
 }
 
 .att-action-btn:disabled:not(.done) {

@@ -27,6 +27,10 @@ const attendanceSchema = new mongoose.Schema({
     type: Number, // computed hours
     default: 0,
   },
+  breaks: [{
+    start: { type: Date },
+    end: { type: Date }
+  }],
   notes: {
     type: String,
     default: '',
