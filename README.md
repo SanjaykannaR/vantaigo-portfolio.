@@ -12,10 +12,9 @@ Founded in 2025, Vantaigo is a dual-stream tech firm specializing in:
 
 ## 🛠 Tech Stack
 - **Frontend:** React.js / Next.js 15 (App Router), Tailwind CSS
-- **Backend:** Node.js, Python (FastAPI)
-- **Database:** PostgreSQL, MongoDB
-- **Cloud & DevOps:** AWS, Docker, Kubernetes
-- **AI/ML:** OpenAI API, Scikit-learn (for talent matching)
+- **Backend:** Node.js
+- **Database:** MongoDB
+
 
 ## 📂 Repository Structure
 ```text
