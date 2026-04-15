@@ -44,38 +44,47 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`} id="main-navbar">
-      <div className="container navbar-container">
-        <Link to="/" className="navbar-logo" id="navbar-logo">
-          <img src="/logo.png" alt="Vantaigo" className="navbar-logo-img" />
-          <div className="navbar-logo-text">
-            <span className="navbar-brand">Vantaigo</span>
-            <span className="navbar-tagline">Software Solutions</span>
+    <>
+      <nav className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`} id="main-navbar">
+        <div className="container navbar-container">
+          <Link to="/" className="navbar-logo" id="navbar-logo">
+            <img src="/logo.png" alt="Vantaigo" className="navbar-logo-img" />
+            <div className="navbar-logo-text">
+              <span className="navbar-brand">Vantaigo</span>
+              <span className="navbar-tagline">Software Solutions</span>
+            </div>
+          </Link>
+
+          <div className={`navbar-links ${isOpen ? 'active' : ''}`}>
+            {navLinks.map(link => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`navbar-link ${location.pathname === link.path ? 'active' : ''}`}
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
-        </Link>
 
-        <div className={`navbar-links ${isOpen ? 'active' : ''}`}>
-          {navLinks.map(link => (
-            <Link
-              key={link.path}
-              to={link.path}
-              className={`navbar-link ${location.pathname === link.path ? 'active' : ''}`}
-            >
-              {link.label}
-            </Link>
-          ))}
+          <button
+            className="navbar-toggle"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label="Toggle menu"
+            id="navbar-toggle"
+          >
+            {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+          </button>
         </div>
-
-        <button
-          className="navbar-toggle"
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label="Toggle menu"
-          id="navbar-toggle"
-        >
-          {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
-        </button>
-      </div>
-    </nav>
+      </nav>
+      {isOpen && (
+        <div
+          className="navbar-mobile-overlay"
+          onClick={() => setIsOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+    </>
   );
 };
 

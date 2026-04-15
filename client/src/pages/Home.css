@@ -457,9 +457,20 @@
   .testimonial-nav { display: none; }
   .cta-card { padding: 50px 24px; }
   .clients-grid { grid-template-columns: repeat(2, 1fr); }
+  .hero-subtitle { font-size: 1rem; }
+  .testimonial-slide { padding: 28px 20px; }
+  .testimonial-slide blockquote { font-size: 0.95rem; }
+  .hero-actions { flex-direction: column; align-items: center; }
+  .hero-actions .btn { width: 100%; max-width: 280px; justify-content: center; }
 }
 
 @media (max-width: 480px) {
-  .stats-grid { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .clients-grid { grid-template-columns: 1fr; }
+  .stat-card { padding: 20px 12px; }
+  .stat-number { font-size: 2rem; }
+  .service-mini-card { padding: 16px; }
+  .cta-card { padding: 36px 16px; }
+  .cta-actions { flex-direction: column; align-items: center; }
+  .cta-actions .btn { width: 100%; max-width: 280px; justify-content: center; }
 }

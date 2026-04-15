@@ -63,15 +63,22 @@ const HRMSDashboard = () => {
       {/* Today's Status */}
       <div className="hrms-today-card glass-card">
         <div>
-          <h3>Today's Attendance</h3>
+          <h3>Today's Status</h3>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{today}</p>
         </div>
         <div style={{ textAlign: 'right' }}>
           {statusIcon(todayStatus)}
-          {todayStatus?.checkIn && <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>In: {new Date(todayStatus.checkIn).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</p>}
+          {todayStatus?.checkIn && (
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: 4 }}>
+              In: {new Date(todayStatus.checkIn).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}
+              {todayStatus?.checkOut && (
+                <> &nbsp;·&nbsp; Out: {new Date(todayStatus.checkOut).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })}</>
+              )}
+            </p>
+          )}
         </div>
         <Link to="/hrms/attendance" className="hrms-btn hrms-btn-primary">
-          {todayStatus ? 'View / Update' : 'Mark Attendance'}
+          {!todayStatus ? '🕐 Clock In' : !todayStatus.checkOut ? '🕐 Clock Out' : '✓ View Attendance'}
         </Link>
       </div>
 
